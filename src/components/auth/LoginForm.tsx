@@ -10,6 +10,8 @@ import Link from 'next/link';
 import { Mail, Lock } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+const ADMIN_EMAIL = 'admin@ilishop.com'; // Define admin email for direct check
+
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,7 +19,8 @@ export default function LoginForm() {
   const { t, language } = useLocalization();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectPath = searchParams.get('redirect') || '/dashboard';
+  const defaultRedirectPath = '/dashboard';
+  const redirectParam = searchParams.get('redirect');
 
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -28,7 +31,18 @@ export default function LoginForm() {
       return;
     }
     login(email, 'Demo User'); // Mock login with a demo name
-    router.push(redirectPath);
+
+    const isAdminUser = email.toLowerCase() === ADMIN_EMAIL;
+    
+    if (isAdminUser) {
+      router.push('/admin/dashboard');
+    } else {
+      // If there's a redirect param and it's not an admin-only area, use it.
+      // Otherwise, go to the default user dashboard.
+      // Avoid redirecting non-admins to /admin/* if it was in redirectParam
+      const finalRedirectPath = (redirectParam && !redirectParam.startsWith('/admin')) ? redirectParam : defaultRedirectPath;
+      router.push(finalRedirectPath);
+    }
   };
 
   return (
