@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { HeroSlide } from '@/types';
@@ -26,12 +26,6 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
     const newIndex = isLastSlide ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
   }, [currentIndex, slides.length]);
-
-  useEffect(() => {
-    if (slides.length <= 1) return;
-    const timer = setTimeout(goToNext, 5000); // Auto-slide every 5 seconds
-    return () => clearTimeout(timer);
-  }, [currentIndex, goToNext, slides.length]);
 
   if (!slides || slides.length === 0) {
     return null;
