@@ -1,5 +1,11 @@
 export type Language = 'en' | 'fa';
 
+export type User = {
+  name: string;
+  email: string;
+  isAdmin?: boolean;
+};
+
 export type Product = {
   id: string;
   name: Record<Language, string>;

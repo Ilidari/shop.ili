@@ -7,6 +7,7 @@ interface LocalizationContextType {
   language: Language;
   setLanguage: Dispatch<SetStateAction<Language>>;
   t: (key: string, replacements?: Record<string, string | number>) => string;
+  currencySymbol: string; // Added currency symbol
 }
 
 const translations: Record<Language, Record<string, string>> = {
@@ -20,6 +21,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.login": "Login",
     "nav.register": "Register",
     "nav.dashboard": "Dashboard",
+    "nav.adminPanel": "Admin Panel",
     "nav.logout": "Logout",
     "hero.mainTitle": "Your Digital Solutions Hub",
     "hero.mainSubtitle": "Discover premium software licenses and high-performance VPS services tailored for you.",
@@ -95,7 +97,14 @@ const translations: Record<Language, Record<string, string>> = {
     "lang.fa": "فارسی",
     "currencySymbol": "$",
     "comingSoon": "Coming Soon",
-    "productNotFound": "Product not found."
+    "productNotFound": "Product not found.",
+    "admin.title": "Admin Panel",
+    "admin.dashboard": "Admin Dashboard",
+    "admin.products": "Manage Products",
+    "admin.orders": "Manage Orders",
+    "admin.users": "Manage Users",
+    "admin.welcome": "Welcome to the Admin Panel, {name}!",
+    "admin.accessDenied": "Access Denied. You do not have permission to view this page."
   },
   fa: {
     "appName": "ایلی شاپ",
@@ -107,6 +116,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.login": "ورود",
     "nav.register": "ثبت نام",
     "nav.dashboard": "داشبورد",
+    "nav.adminPanel": "پنل مدیریت",
     "nav.logout": "خروج",
     "hero.mainTitle": "مرکز راهکارهای دیجیتال شما",
     "hero.mainSubtitle": "لایسنس‌های نرم‌افزار ویژه و سرویس‌های VPS با عملکرد بالا، مناسب برای شما.",
@@ -180,9 +190,16 @@ const translations: Record<Language, Record<string, string>> = {
     "footer.copyright": "© {year} ایلی شاپ. تمامی حقوق محفوظ است.",
     "lang.en": "English",
     "lang.fa": "فارسی",
-    "currencySymbol": "تومان", // Example, adjust as needed
+    "currencySymbol": "تومان",
     "comingSoon": "به زودی",
-    "productNotFound": "محصول یافت نشد."
+    "productNotFound": "محصول یافت نشد.",
+    "admin.title": "پنل مدیریت",
+    "admin.dashboard": "داشبورد ادمین",
+    "admin.products": "مدیریت محصولات",
+    "admin.orders": "مدیریت سفارشات",
+    "admin.users": "مدیریت کاربران",
+    "admin.welcome": "به پنل مدیریت خوش آمدید، {name}!",
+    "admin.accessDenied": "دسترسی غیرمجاز. شما اجازه مشاهده این صفحه را ندارید."
   },
 };
 
@@ -216,9 +233,12 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
     }
     return translation;
   };
+  
+  const currencySymbol = language === 'fa' ? translations.fa.currencySymbol : translations.en.currencySymbol;
+
 
   return (
-    <LocalizationContext.Provider value={{ language, setLanguage, t }}>
+    <LocalizationContext.Provider value={{ language, setLanguage, t, currencySymbol }}>
       {children}
     </LocalizationContext.Provider>
   );

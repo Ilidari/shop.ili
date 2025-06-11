@@ -1,7 +1,7 @@
 "use client";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ShoppingCart, User, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
+import { ShoppingCart, User, LogOut, LayoutDashboard, Menu, X, ShieldCheck } from 'lucide-react';
 import Logo from '@/components/shared/Logo';
 import LanguageSwitcher from '@/components/shared/LanguageSwitcher';
 import { useLocalization } from '@/contexts/LocalizationContext';
@@ -31,7 +31,7 @@ const NavLink = ({ href, children, onClick }: { href: string; children: React.Re
 export default function Header() {
   const { t, language } = useLocalization();
   const { getItemCount } = useCart();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, isAdmin, logout } = useAuth(); // Added isAdmin
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -71,9 +71,15 @@ export default function Header() {
             </Link>
             {isAuthenticated ? (
               <>
-                <Link href="/dashboard" className="p-2 rounded-md hover:bg-muted transition-colors" aria-label={t('nav.dashboard')}>
-                  <LayoutDashboard className="h-5 w-5 text-foreground/70" />
-                </Link>
+                {isAdmin ? (
+                  <Link href="/admin/dashboard" className="p-2 rounded-md hover:bg-muted transition-colors" aria-label={t('nav.adminPanel')}>
+                    <ShieldCheck className="h-5 w-5 text-accent" />
+                  </Link>
+                ) : (
+                  <Link href="/dashboard" className="p-2 rounded-md hover:bg-muted transition-colors" aria-label={t('nav.dashboard')}>
+                    <LayoutDashboard className="h-5 w-5 text-foreground/70" />
+                  </Link>
+                )}
                 <Button variant="ghost" size="icon" onClick={logout} aria-label={t('nav.logout')}>
                   <LogOut className="h-5 w-5 text-foreground/70" />
                 </Button>
@@ -93,11 +99,30 @@ export default function Header() {
                 </SheetTrigger>
                 <SheetContent side={language === 'fa' ? 'right' : 'left'} className="w-[280px] p-0">
                   <div className="p-4 border-b">
-                    <Logo onClick={closeMobileMenu} />
+                    <Logo onClick={closeMobileMenu}/>
                   </div>
                   <nav className="flex flex-col space-y-2 p-4">
                     {renderNavLinks(true)}
+                     {isAuthenticated && (
+                        isAdmin ? (
+                            <NavLink href="/admin/dashboard" onClick={closeMobileMenu}>{t('nav.adminPanel')}</NavLink>
+                        ) : (
+                            <NavLink href="/dashboard" onClick={closeMobileMenu}>{t('nav.dashboard')}</NavLink>
+                        )
+                    )}
                   </nav>
+                   <div className="p-4 mt-auto border-t">
+                     {isAuthenticated ? (
+                        <Button variant="outline" onClick={() => { logout(); closeMobileMenu();}} className="w-full">
+                            <LogOut className="mr-2 rtl:ml-2 rtl:mr-0 h-4 w-4" />
+                            {t('nav.logout')}
+                        </Button>
+                    ) : (
+                         <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={closeMobileMenu}>
+                            <Link href="/login">{t('nav.login')}</Link>
+                        </Button>
+                    )}
+                   </div>
                 </SheetContent>
               </Sheet>
             </div>
