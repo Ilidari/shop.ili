@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useState } from 'react';
+import Image from 'next/image';
 
 
 export default function ContactPage() {
@@ -108,7 +109,7 @@ export default function ContactPage() {
                 width={600}
                 height={400}
                 className="object-cover w-full h-full"
-                data-ai-hint="city map"
+                data-ai-hint="street map"
               />
           </div>
         </div>
@@ -116,6 +117,3 @@ export default function ContactPage() {
     </div>
   );
 }
-
-// Added import
-import Image from 'next/image';

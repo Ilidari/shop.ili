@@ -12,7 +12,7 @@ export const mockProducts: Product[] = [
     price: 99.99,
     currency: 'USD',
     image: 'https://placehold.co/600x400.png',
-    dataAiHint: 'software interface',
+    dataAiHint: 'modern OS',
     category: 'license',
     features: {
       en: ['Advanced productivity tools', 'Regular security updates', '24/7 premium support', 'Cross-platform compatibility'],
@@ -31,7 +31,7 @@ export const mockProducts: Product[] = [
     price: 149.50,
     currency: 'USD',
     image: 'https://placehold.co/600x400.png',
-    dataAiHint: 'graphic design',
+    dataAiHint: 'design software',
     category: 'license',
     features: {
       en: ['Vector editing powerhouse', 'Photo manipulation magic', 'Intuitive typography tools', 'Cloud asset library'],
@@ -49,7 +49,7 @@ export const mockProducts: Product[] = [
     price: 10.00,
     currency: 'USD',
     image: 'https://placehold.co/600x400.png',
-    dataAiHint: 'server rack',
+    dataAiHint: 'cloud server',
     category: 'vps',
     features: {
       en: ['1 Core CPU', '2GB RAM', '50GB NVMe SSD Storage', '1TB Premium Bandwidth', '99.9% Uptime Guarantee'],
@@ -67,7 +67,7 @@ export const mockProducts: Product[] = [
     price: 25.00,
     currency: 'USD',
     image: 'https://placehold.co/600x400.png',
-    dataAiHint: 'code editor',
+    dataAiHint: 'coding screen',
     category: 'vps',
     features: {
       en: ['2 Core CPU', '4GB RAM', '100GB NVMe SSD Storage', '3TB Premium Bandwidth', 'Full Root Access', 'Dedicated IP'],
@@ -103,7 +103,7 @@ export const mockProducts: Product[] = [
     price: 50.00,
     currency: 'USD',
     image: 'https://placehold.co/600x400.png',
-    dataAiHint: 'data center',
+    dataAiHint: 'business server',
     category: 'vps',
     features: {
       en: ['4 Core CPU', '8GB RAM', '200GB NVMe SSD Storage', '5TB Premium Bandwidth', 'Automated Daily Backups', 'Priority Support'],
@@ -127,7 +127,7 @@ export const mockHeroSlides: HeroSlide[] = [
     title: { en: 'Essential Software Licenses', fa: 'لایسنس‌های نرم‌افزار ضروری' },
     subtitle: { en: 'Get the tools you need to succeed, from OS to design suites.', fa: 'ابزارهایی که برای موفقیت نیاز دارید را دریافت کنید، از سیستم‌عامل تا مجموعه‌های طراحی.' },
     imageUrl: 'https://placehold.co/1200x400.png',
-    dataAiHint: 'software box',
+    dataAiHint: 'digital software',
     link: '/products?category=license',
     cta: { en: 'Discover Licenses', fa: 'کشف لایسنس‌ها' }
   },
