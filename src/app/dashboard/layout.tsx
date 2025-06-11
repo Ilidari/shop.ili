@@ -1,5 +1,5 @@
 "use client"; // Required for useAuth and potentially other hooks
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react'; // Added React import here
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
@@ -14,7 +14,7 @@ export default function DashboardLayout({
   const router = useRouter();
   
   // This effect will run on the client after hydration
-  const [authChecked, setAuthChecked] = React.useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     // Give a moment for auth state to be potentially loaded from localStorage
