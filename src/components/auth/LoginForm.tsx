@@ -1,3 +1,4 @@
+
 "use client";
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,19 +10,20 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import Link from 'next/link';
 import { Mail, Lock } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-
-const ADMIN_EMAIL = 'admin@ilishop.com'; 
+import { signIn, useSession } from 'next-auth/react';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, isAuthenticated, isAdmin: authIsAdmin } = useAuth(); // Destructure isAuthenticated
+  const { login } = useAuth(); // login from our context now uses signIn('credentials')
   const { t, language } = useLocalization();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const defaultRedirectPath = '/dashboard';
-  const redirectParam = searchParams.get('redirect');
+  const { data: session, status } = useSession();
 
+  const defaultRedirectPath = '/dashboard';
+  const adminRedirectPath = '/admin/dashboard';
+  const redirectParam = searchParams.get('redirect');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,70 +31,31 @@ export default function LoginForm() {
       alert(language === 'en' ? 'Please fill in all fields.' : 'لطفا تمام فیلدها را پر کنید.');
       return;
     }
-    
-    // Call login from AuthContext, which now handles password check for admin
-    login(email, password, 'Demo User'); 
+    await login(email, password); // This now calls NextAuth's signIn
+  };
 
-    // After login attempt, check isAuthenticated and isAdmin from context
-    // Need a slight delay or a way to react to context changes, as context update might be async
-    // For simplicity here, we'll rely on the redirect logic based on the email.
-    // A more robust solution would use useEffect to watch isAuthenticated.
-
-    // This part of the logic relies on the fact that AuthContext.login will not set isAuthenticated
-    // if admin credentials are wrong.
-    // We need to ensure that the routing logic happens *after* the context has had a chance to update.
-    // A common pattern is to use useEffect to react to changes in `isAuthenticated`.
-
-    // For now, let's assume login function in context sets state synchronously enough for this to work,
-    // or handles toasts for errors. The redirection logic will be simplified.
-
-    // If login was successful (isAuthenticated becomes true), then redirect.
-    // The useAuth() hook will provide updated isAuthenticated and isAdmin values.
-    // We might need a small timeout or a useEffect in a higher component to handle redirection reliably after state update.
-
-    // Let's adjust redirection logic slightly:
-    // If the email is admin, and login *would have been successful* (AuthContext handles this now)
-    // it will set the user as admin.
-    
-    // The AuthContext's login function now handles the toast for incorrect admin password.
-    // So, we only redirect if login was successful.
-    // This check might be tricky due to async nature of setState.
-    // A better way: login function could return a status or AuthProvider exposes a loginPromise.
-    // For now, we'll rely on AuthProvider to set isAdmin correctly.
-
-    // A simple way to check after "login" call.
-    // This is still a bit racy. A useEffect in a parent component listening to `isAuthenticated` is better.
-    setTimeout(() => {
-      // const { isAuthenticated: currentIsAuthenticated, isAdmin: currentIsAdmin } = useAuth.getState ? useAuth.getState() : {isAuthenticated: false, isAdmin: false}; // This is hypothetical, useAuth doesn't have getState
-      
-      // Re-fetch from context to get latest state (conceptual, actual context update triggers re-render)
-      // This logic is better handled by useEffect reacting to isAuthenticated
-      // For this exercise, we'll assume that if login fails (e.g. wrong admin pass), isAuthenticated won't be true.
-
-      if (email.toLowerCase() === ADMIN_EMAIL) {
-        // If AuthContext.login failed for admin, isAuthenticated would be false.
-        // We assume AuthContext has set the correct states.
-        // The redirection to admin/dashboard should happen if user IS admin.
-        // We'll rely on a subsequent check of `isAuthenticated` and `isAdmin`.
-        // The redirect will be handled by a useEffect in layout or here after login attempt.
-      } else {
-        // Non-admin logic
-      }
-    }, 0);
-
+  const handleGoogleSignIn = async () => {
+    // Determine callbackUrl based on potential redirect or default
+    let callbackUrl = defaultRedirectPath;
+    if (redirectParam && !redirectParam.startsWith('/admin')) {
+      callbackUrl = redirectParam;
+    }
+    // Note: Google sign-in won't know if a user *should* be admin based on email beforehand
+    // Admin status check will happen based on session email after successful Google sign-in
+    await signIn('google', { callbackUrl });
   };
   
-  // Effect to handle redirection after login attempt
   useEffect(() => {
-    if (isAuthenticated) {
-      if (authIsAdmin) {
-        router.push('/admin/dashboard');
+    if (status === 'authenticated' && session?.user) {
+      const isAdminUser = session.user.email === 'admin@ilishop.com'; // Or check session.user.isAdmin if set
+      if (isAdminUser) {
+        router.push(adminRedirectPath);
       } else {
         const finalRedirectPath = (redirectParam && !redirectParam.startsWith('/admin')) ? redirectParam : defaultRedirectPath;
         router.push(finalRedirectPath);
       }
     }
-  }, [isAuthenticated, authIsAdmin, router, redirectParam, defaultRedirectPath]);
+  }, [status, session, router, redirectParam, defaultRedirectPath, adminRedirectPath]);
 
 
   return (
@@ -135,8 +98,8 @@ export default function LoginForm() {
               />
             </div>
           </div>
-          <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 text-lg">
-            {t('login.button')}
+          <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 text-lg" disabled={status === 'loading'}>
+            {status === 'loading' ? (language === 'en' ? 'Logging in...' : 'درحال ورود...') : t('login.button')}
           </Button>
         </form>
       </CardContent>
@@ -147,11 +110,14 @@ export default function LoginForm() {
              <Link href="/register">{t('login.registerLink')}</Link>
           </Button>
         </p>
-        {/* Social login placeholders */}
         <p className="text-xs text-muted-foreground mt-4">{language === 'en' ? 'Or login with' : 'یا ورود با'}</p>
-        <div className="flex space-x-2 rtl:space-x-reverse mt-2">
-            <Button variant="outline" className="flex-1 h-11">Google</Button>
-            <Button variant="outline" className="flex-1 h-11">Facebook</Button>
+        <div className="flex space-x-2 rtl:space-x-reverse mt-2 w-full">
+            <Button variant="outline" className="flex-1 h-11" onClick={handleGoogleSignIn} disabled={status === 'loading'}>
+              Google
+            </Button>
+            <Button variant="outline" className="flex-1 h-11" disabled={true}>
+              Facebook {/* Facebook login not implemented */}
+            </Button>
         </div>
       </CardFooter>
     </Card>

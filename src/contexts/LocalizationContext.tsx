@@ -1,3 +1,4 @@
+
 "use client";
 import type { Dispatch, ReactNode, SetStateAction } from 'react';
 import React, { createContext, useState, useContext, useEffect } from 'react';
@@ -59,7 +60,7 @@ const translations: Record<Language, Record<string, string>> = {
     "login.noAccount": "Don't have an account?",
     "login.registerLink": "Register here",
     "login.errorTitle": "Login Failed",
-    "login.invalidCredentials": "Invalid email or password.",
+    "login.invalidCredentials": "Invalid email or password. Please try again.",
     "login.successTitle": "Login Successful",
     "register.title": "Create an Account",
     "register.name": "Full Name",
@@ -70,6 +71,7 @@ const translations: Record<Language, Record<string, string>> = {
     "register.hasAccount": "Already have an account?",
     "register.loginLink": "Login here",
     "register.successTitle": "Registration Successful",
+    "register.info": "Please proceed to login.",
     "dashboard.title": "My Dashboard",
     "dashboard.welcome": "Welcome, {name}!",
     "dashboard.overview": "Overview",
@@ -170,7 +172,7 @@ const translations: Record<Language, Record<string, string>> = {
     "login.noAccount": "حساب کاربری ندارید؟",
     "login.registerLink": "اینجا ثبت نام کنید",
     "login.errorTitle": "ورود ناموفق",
-    "login.invalidCredentials": "ایمیل یا رمز عبور نامعتبر است.",
+    "login.invalidCredentials": "ایمیل یا رمز عبور نامعتبر است. لطفا دوباره تلاش کنید.",
     "login.successTitle": "ورود موفقیت آمیز بود",
     "register.title": "ایجاد حساب کاربری",
     "register.name": "نام کامل",
@@ -181,6 +183,7 @@ const translations: Record<Language, Record<string, string>> = {
     "register.hasAccount": "قبلاً حساب کاربری ایجاد کرده‌اید؟",
     "register.loginLink": "اینجا وارد شوید",
     "register.successTitle": "ثبت نام موفقیت آمیز بود",
+    "register.info": "لطفا برای ادامه وارد شوید.",
     "dashboard.title": "داشبورد من",
     "dashboard.welcome": "خوش آمدید، {name}!",
     "dashboard.overview": "پیشخوان",

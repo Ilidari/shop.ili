@@ -1,9 +1,11 @@
 export type Language = 'en' | 'fa';
 
 export type User = {
+  id?: string; // Added for NextAuth
   name: string;
   email: string;
-  isAdmin?: boolean;
+  isAdmin: boolean; // Made non-optional, will be set by NextAuth session
+  image?: string; // Added for NextAuth
 };
 
 export type Product = {

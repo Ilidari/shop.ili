@@ -1,3 +1,4 @@
+
 "use client";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -6,7 +7,7 @@ import Logo from '@/components/shared/Logo';
 import LanguageSwitcher from '@/components/shared/LanguageSwitcher';
 import { useLocalization } from '@/contexts/LocalizationContext';
 import { useCart } from '@/contexts/CartContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext'; // This now uses NextAuth session via useSession
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
@@ -31,7 +32,7 @@ const NavLink = ({ href, children, onClick }: { href: string; children: React.Re
 export default function Header() {
   const { t, language } = useLocalization();
   const { getItemCount } = useCart();
-  const { isAuthenticated, user, isAdmin, logout } = useAuth(); // Added isAdmin
+  const { isAuthenticated, user, isAdmin, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -80,7 +81,7 @@ export default function Header() {
                     <LayoutDashboard className="h-5 w-5 text-foreground/70" />
                   </Link>
                 )}
-                <Button variant="ghost" size="icon" onClick={logout} aria-label={t('nav.logout')}>
+                <Button variant="ghost" size="icon" onClick={() => logout()} aria-label={t('nav.logout')}>
                   <LogOut className="h-5 w-5 text-foreground/70" />
                 </Button>
               </>

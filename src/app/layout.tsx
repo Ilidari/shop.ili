@@ -4,6 +4,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
 import { LocalizationProvider } from '@/contexts/LocalizationContext';
 import MainAppLayout from '@/components/layout/MainAppLayout';
+import { SessionProvider } from 'next-auth/react';
 
 export const metadata: Metadata = {
   title: 'ili shop - Software Licenses & VPS',
@@ -26,13 +27,15 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <LocalizationProvider>
-          <AuthProvider>
-            <CartProvider> {/* CartProvider needs Localization for toasts */}
-              <MainAppLayout>{children}</MainAppLayout>
-            </CartProvider>
-          </AuthProvider>
-        </LocalizationProvider>
+        <SessionProvider>
+          <LocalizationProvider>
+            <AuthProvider>
+              <CartProvider> {/* CartProvider needs Localization for toasts */}
+                <MainAppLayout>{children}</MainAppLayout>
+              </CartProvider>
+            </AuthProvider>
+          </LocalizationProvider>
+        </SessionProvider>
       </body>
     </html>
   );
