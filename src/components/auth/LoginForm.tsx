@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLocalization } from '@/contexts/LocalizationContext';
 import { Button } from '@/components/ui/button';
@@ -63,7 +63,7 @@ export default function LoginForm() {
     // A simple way to check after "login" call.
     // This is still a bit racy. A useEffect in a parent component listening to `isAuthenticated` is better.
     setTimeout(() => {
-      const { isAuthenticated: currentIsAuthenticated, isAdmin: currentIsAdmin } = useAuth.getState ? useAuth.getState() : {isAuthenticated: false, isAdmin: false}; // This is hypothetical, useAuth doesn't have getState
+      // const { isAuthenticated: currentIsAuthenticated, isAdmin: currentIsAdmin } = useAuth.getState ? useAuth.getState() : {isAuthenticated: false, isAdmin: false}; // This is hypothetical, useAuth doesn't have getState
       
       // Re-fetch from context to get latest state (conceptual, actual context update triggers re-render)
       // This logic is better handled by useEffect reacting to isAuthenticated
