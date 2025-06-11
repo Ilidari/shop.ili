@@ -1,7 +1,7 @@
 "use client";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ShoppingBag, Users, KeyRound, LogOut, Package, Settings } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Users, Settings, LogOut, Package } from 'lucide-react'; // Added Settings
 import { useLocalization } from '@/contexts/LocalizationContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -39,7 +39,7 @@ export default function AdminSidebar() {
     { href: '/admin/products', icon: Package, labelKey: 'admin.products' },
     { href: '/admin/orders', icon: ShoppingBag, labelKey: 'admin.orders' },
     { href: '/admin/users', icon: Users, labelKey: 'admin.users' },
-    // { href: '/admin/settings', icon: Settings, labelKey: 'admin.settings' }, // Example for future
+    { href: '/admin/settings', icon: Settings, labelKey: 'admin.settings' }, 
   ];
 
   return (
