@@ -1,38 +1,35 @@
+
 "use client"; 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react'; // Removed useState
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import { Loader2, ShieldAlert } from 'lucide-react';
-import { useLocalization } from '@/contexts/LocalizationContext'; // Import useLocalization
+import { useLocalization } from '@/contexts/LocalizationContext';
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, user, isAdmin } = useAuth();
+  const { isAuthenticated, isAdmin, status } = useAuth(); 
   const router = useRouter();
-  const { t, language } = useLocalization(); // Get t and language
+  const { t, language } = useLocalization();
   
-  const [authChecked, setAuthChecked] = useState(false);
-
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!isAuthenticated) {
-        router.push('/login?redirect=/admin/dashboard');
-      } else if (!isAdmin) {
-        // Non-admin users are redirected or shown an access denied message.
-        // For now, let's keep them on this page but show a message.
-        // Or redirect: router.push('/'); 
-      }
-      setAuthChecked(true);
-    }, 100); 
-    return () => clearTimeout(timer);
-  }, [isAuthenticated, isAdmin, router]);
+    if (status === 'loading') {
+      return; // Wait for auth status to be determined
+    }
 
+    if (!isAuthenticated) {
+      router.push('/login?redirect=/admin/dashboard');
+    } else if (!isAdmin && status === 'authenticated') { 
+      // If authenticated but not admin, the content below will show access denied.
+      // No explicit redirect here to allow the "Access Denied" message to show.
+    }
+  }, [isAuthenticated, isAdmin, router, status]);
 
-  if (!authChecked) {
+  if (status === 'loading') {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -40,9 +37,9 @@ export default function AdminLayout({
     );
   }
 
-  if (!isAuthenticated) {
-    // This case should ideally be handled by the redirect in useEffect,
-    // but as a fallback or if redirect hasn't happened yet:
+  if (!isAuthenticated && status === 'unauthenticated') {
+    // This case is primarily handled by the redirect in useEffect,
+    // but this is a fallback rendering state.
     return (
       <div className="flex items-center justify-center min-h-screen">
          <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -51,7 +48,7 @@ export default function AdminLayout({
     );
   }
   
-  if (!isAdmin) {
+  if (isAuthenticated && !isAdmin) { // Check after loading and authentication
     return (
        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] text-center">
         <ShieldAlert className="h-16 w-16 text-destructive mb-4" />
@@ -66,13 +63,23 @@ export default function AdminLayout({
     );
   }
 
+  // If authenticated and is admin
+  if (isAuthenticated && isAdmin) {
+    return (
+      <div className="flex flex-col md:flex-row gap-8 items-start py-8">
+        <AdminSidebar />
+        <main className="flex-1 bg-card p-6 sm:p-8 rounded-lg shadow-lg min-h-[calc(100vh-15rem)]">
+          {children}
+        </main>
+      </div>
+    );
+  }
 
+  // Fallback for any other state (e.g. if somehow isAuthenticated is false but status is not 'unauthenticated' yet)
+  // This usually means it's still effectively loading or in an indeterminate state before redirection.
   return (
-    <div className="flex flex-col md:flex-row gap-8 items-start py-8">
-      <AdminSidebar />
-      <main className="flex-1 bg-card p-6 sm:p-8 rounded-lg shadow-lg min-h-[calc(100vh-15rem)]">
-        {children}
-      </main>
+    <div className="flex items-center justify-center min-h-screen">
+      <Loader2 className="h-12 w-12 animate-spin text-primary" />
     </div>
   );
 }
