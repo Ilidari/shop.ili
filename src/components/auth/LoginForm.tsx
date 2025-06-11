@@ -31,7 +31,10 @@ export default function LoginForm() {
       alert(language === 'en' ? 'Please fill in all fields.' : 'لطفا تمام فیلدها را پر کنید.');
       return;
     }
-    await login(email, password); // This now calls NextAuth's signIn
+    // login function in AuthContext now calls signIn from NextAuth
+    // We let NextAuth handle redirection by default by not setting redirect: false here
+    // or by setting appropriate callbackUrl.
+    await login(email, password);
   };
 
   const handleGoogleSignIn = async () => {
@@ -47,7 +50,7 @@ export default function LoginForm() {
   
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
-      const isAdminUser = session.user.email === 'admin@ilishop.com'; // Or check session.user.isAdmin if set
+      const isAdminUser = (session.user as any).isAdmin === true; // Ensure isAdmin is correctly accessed
       if (isAdminUser) {
         router.push(adminRedirectPath);
       } else {

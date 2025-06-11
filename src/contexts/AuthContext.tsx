@@ -14,7 +14,7 @@ interface AuthContextType {
   user: User | null;
   isAdmin: boolean;
   status: 'loading' | 'authenticated' | 'unauthenticated'; // Expose status
-  login: (email: string, password?: string, name?: string) => Promise<void>;
+  login: (email: string, password?: string) => Promise<void>; // name removed, will come from session
   logout: () => void;
   register: (name: string, email: string, password?: string) => Promise<void>;
   updateAdminPassword: (currentPasswordAttempt: string, newPassword?: string) => boolean;
@@ -40,9 +40,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   
   const isAdmin = isAuthenticated && user?.isAdmin === true;
 
-  const login = async (email: string, password?: string, name?: string) => {
+  const login = async (email: string, password?: string) => {
     const result = await signIn('credentials', {
-      redirect: false,
+      redirect: false, // We will handle redirect in LoginForm's useEffect based on session status
       email,
       password,
     });
@@ -54,13 +54,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         variant: 'destructive',
       });
     } else if (result?.ok) {
-      // The toast will be shown, and LoginForm's useEffect will handle redirection based on the updated session.
-      // We need to ensure the session object is fully populated before the toast to get the user's name if available.
-      // Since signIn updates the session, we might rely on a subsequent render or get the latest session data.
-      // For simplicity, the toast uses email if name isn't immediately available from the current `session` object.
+      // Session will be updated by NextAuth, LoginForm's useEffect will handle redirection.
+      // Toasting success here is fine. Name will be available from the session object.
       toast({
         title: t('login.successTitle'),
-        description: language === 'en' ? `Welcome back, ${name || email}!` : `خوش آمدید, ${name || email}!`,
+        description: language === 'en' ? `Welcome back!` : `خوش آمدید!`, // General welcome, name will be in dashboard
         variant: 'default',
       });
     }
@@ -76,6 +74,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const register = async (name: string, email: string, password?: string) => {
+    // Mock registration: In a real app, this would call an API endpoint
+    // For NextAuth, registration usually involves creating a user in your DB
+    // that CredentialsProvider can then authenticate against.
+    // For now, we'll just redirect to login and show a success message.
     toast({
       title: t('register.successTitle'),
       description: language === 'en' ? `Welcome, ${name}! Proceed to login.` : `خوش آمدید، ${name}! لطفا وارد شوید.`,
@@ -85,13 +87,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateAdminPassword = (currentPasswordAttempt: string, newPassword?: string): boolean => {
+    // This is a mock function. In a real NextAuth setup with CredentialsProvider,
+    // password changes would need to update the hashed password in your database.
+    // This client-side mock won't persist for actual NextAuth login.
     if (!isAdmin) return false;
     
     toast({
       title: language === 'en' ? "Feature Info" : "اطلاعات ویژگی",
       description: language === 'en' ? "Admin password change is mocked and doesn't persist for NextAuth login in this demo." : "تغییر رمز عبور ادمین در این دمو شبیه‌سازی شده و برای ورود NextAuth پایدار نیست.",
     });
+    // This check is purely illustrative as it's not connected to NextAuth's actual credential check
     if (currentPasswordAttempt === "Miladabi666@" && newPassword && newPassword.length >=6) {
+        // console.log("Mock admin password updated to:", newPassword); // This doesn't actually change the password NextAuth uses
         return true; 
     }
     if (currentPasswordAttempt !== "Miladabi666@") {
